@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
@@ -35,6 +36,18 @@ public class Main {
                 its_an_arabic_numbers = false;
                 System.out.println("Введены римские цифры");
                 //values = new Romes(parsed_input[0], parsed_input[2], 0);
+            }
+
+            if (value1<0 || value1>10 ||value2<0 || value2>10){
+
+                try {
+                    throw new IOException();
+                } catch (IOException e) {
+                    System.out.println("Вводите числа от 1 до 10");
+                    throw new RuntimeException(e);
+                }
+
+
             }
 
             if (its_an_arabic_numbers) {
@@ -103,57 +116,110 @@ class Romes extends Number {
         this.romes_value2 = value2;
         this.romes_value1_int = convert_to_int(romes_value1);
         this.romes_value2_int = convert_to_int(romes_value2);
-    }
-    private String convert_result_to_Romes(int n, int ostatok) {
-        ostatok = n % 10;
-        if (ostatok != 0) {
+        if (romes_value1_int<0 || romes_value1_int>10 ||romes_value2_int<0 || romes_value2_int>10){
             try {
-                return convert_result_to_Romes(n - ostatok, 0) + roman_letters_9[ostatok - 1];
-            } catch (ArrayIndexOutOfBoundsException e) {
-                sign = "-";
-                return convert_result_to_Romes(n - ostatok, 0) + roman_letters_9[(ostatok + 1) * -1];
+                throw new IOException();
+            } catch (IOException e) {
+                System.out.println("Вводите числа от 1 до 10");
+                throw new RuntimeException(e);
             }
         }
-        //Возможность вывести отрицательное римское число
-        if (n > 0) {
-            n = n - 10;
-            return convert_result_to_Romes(n,0) + "X";
-        } else if (n < 0) {
-            n = n + 10;
-            return convert_result_to_Romes(n,0) + "X";
-        }   else {
-            return sign;
-        }
     }
+   private String convert_result_to_Romes(int n) {
+       String ans = "";
+       int h = 0;
+       int t = 0;
+       int o = 0;
+       int ost = 0;
+       h = (int) Math.floor(n/100);
+       ost = n % 100;
+       t = (int) Math.floor(ost/10);
+       o = ost % 10;
+       if (h == 1){
+           ans = ans+"C";
+       }
+       if(t == 1){
+           ans = ans+ "X";
+       } else if (t == 2) {
+           ans = ans+ "XX";
+       } else if (t == 3){
+           ans = ans+ "XXX";
+       }else if (t == 4) {
+           ans = ans+ "XL";
+       } else if (t == 5){
+           ans = ans+ "L";
+       }else if (t == 6) {
+           ans = ans+ "LX";
+       } else if (t == 7){
+           ans = ans+ "LXX";
+       }else if (t == 8) {
+           ans = ans+ "LXXX";
+       } else if (t == 9){
+           ans = ans+ "XC";
+       }
+       if(o == 1){
+           ans = ans+ "I";
+       } else if (o == 2) {
+           ans = ans+ "II";
+       } else if (o == 3){
+           ans = ans+ "III";
+       }else if (o == 4) {
+           ans = ans+ "IV";
+       } else if (o == 5){
+           ans = ans+ "V";
+       }else if (o == 6) {
+           ans = ans+ "VI";
+       } else if (o == 7){
+           ans = ans+ "VII";
+       }else if (o == 8) {
+           ans = ans+ "VIII";
+       } else if (o == 9){
+           ans = ans+ "IX";
+       }
+       return ans;
+   }
 
     @Override
     public void sum() {
         result_int = romes_value1_int + romes_value2_int;
-        result_string = convert_result_to_Romes(result_int, result_int);
+
+        result_string = convert_result_to_Romes(result_int);
     }
 
     @Override
     public void sub() {
         result_int = romes_value1_int - romes_value2_int;
-        result_string = convert_result_to_Romes(result_int, result_int);
+        if (result_int<1 ){
+            try {
+                throw new IOException();
+            } catch (IOException e) {
+                System.out.println("Римские числа не могут быть меньше нуля");
+                throw new RuntimeException(e);
+            }
+        }
+        result_string = convert_result_to_Romes(result_int);
     }
 
     @Override
     public void div() {
-        try {
-            result_int = romes_value1_int / romes_value2_int;
-            result_string = convert_result_to_Romes(result_int, result_int);
-        } catch (ArithmeticException e) {
-            System.out.print("Проверьте правильность ввода римских цифр. Вероятно введены и арабские и римские одновременно. ");
-            return;
+        if(romes_value2_int== 0){
+            try {
+                throw new IOException();
+            } catch (IOException e) {
+                System.out.println("Делить на ноль нельзя");
+                throw new RuntimeException(e);
+            }
         }
+            result_int = (int) Math.floor(romes_value1_int / romes_value2_int);
+            result_string = convert_result_to_Romes(result_int);
+
 
     }
 
     @Override
     public void mul() {
         result_int = romes_value1_int * romes_value2_int;
-        result_string = convert_result_to_Romes(result_int, result_int);
+        result_string = convert_result_to_Romes(result_int);
     }
 
     @Override
@@ -251,12 +317,15 @@ class Arabic extends Number {
     }
 
     public void div() {
-        try{
-            this.result = value1 / value2;
-        } catch (ArithmeticException e) {
-            System.out.print("Деление на 0! ");
-            return;
+        if(value2 == 0){
+            try {
+                throw new IOException();
+            } catch (IOException e) {
+                System.out.println("Делить на ноль нельзя");
+                throw new RuntimeException(e);
+            }
         }
+        this.result = (int) Math.floor(value1 / value2);
 
     }
 
